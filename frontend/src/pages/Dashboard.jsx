@@ -4,219 +4,195 @@ import { useSessions } from "../context/SessionContext";
 import StatCard from "../components/ui/StatCard";
 import WeeklyChart from "../components/charts/WeeklyChart";
 import TrendChart from "../components/charts/TrendChart";
-import Button from "../components/ui/Button";
 import AddSessionModal from "../components/sessions/AddSessionModal";
 import SessionCard from "../components/sessions/SessionCard";
 
 function getGreeting() {
   const h = new Date().getHours();
-  if (h < 12) return "Good morning";
-  if (h < 17) return "Good afternoon";
-  return "Good evening";
-}
-
-function getMotivationalQuote(stats) {
-  if (stats.totalSessions === 0) return "Every legend starts with zero sessions. Log your first one.";
-  if (stats.currentStreak >= 7) return "7+ day streak! You're built different. Keep going.";
-  if (stats.currentStreak >= 3) return `${stats.currentStreak} days straight. Momentum is building.`;
-  if (stats.avgShootingPct >= 60) return "60%+ shooting. Elite tier. Keep that consistency.";
-  if (stats.avgShootingPct >= 40) return "Solid form. Every shot counts. Push for 50%.";
-  return "The grind is real. Consistency beats talent every time.";
+  if (h < 12) return "MORNING";
+  if (h < 17) return "AFTERNOON";
+  return "EVENING";
 }
 
 export default function Dashboard() {
   const { user } = useAuth();
   const { sessions, stats } = useSessions();
   const [showModal, setShowModal] = useState(false);
-
   const recentSessions = sessions.slice(0, 3);
-
   const totalHours = Math.floor(stats.totalPracticeMinutes / 60);
   const remainMins = stats.totalPracticeMinutes % 60;
   const timeDisplay = totalHours > 0 ? `${totalHours}h ${remainMins}m` : `${stats.totalPracticeMinutes}m`;
 
   return (
     <div style={{ maxWidth: 1000 }}>
-      {/* Header */}
-      <div className="fade-in" style={{
-        display: "flex", justifyContent: "space-between",
-        alignItems: "flex-start", marginBottom: 28, flexWrap: "wrap", gap: 12,
-      }}>
-        <div>
-          <p style={{ color: "var(--text-muted)", fontSize: 12, fontWeight: 500, marginBottom: 4 }}>
-            {getGreeting()}, {user?.name?.split(" ")[0]} 👋
-          </p>
-          <h1 className="font-display" style={{ fontSize: 32, letterSpacing: "0.04em" }}>
-            YOUR <span style={{ color: "var(--orange)" }}>DASHBOARD</span>
-          </h1>
-          <p style={{ color: "var(--text-muted)", fontSize: 13, marginTop: 4 }}>
-            {getMotivationalQuote(stats)}
-          </p>
-        </div>
 
-        <Button
-          variant="primary"
-          onClick={() => setShowModal(true)}
-          icon="+"
-          size="md"
-        >
-          Log Session
-        </Button>
+      {/* ── Hero Header ──────────────────────────────── */}
+      <div className="fade-up" style={{
+        background: "linear-gradient(135deg, var(--bg-card) 0%, rgba(255,85,0,0.06) 50%, rgba(14,165,233,0.04) 100%)",
+        border: "1px solid var(--border)",
+        borderRadius: "var(--radius-xl)",
+        padding: "28px 32px",
+        marginBottom: 20,
+        position: "relative",
+        overflow: "hidden",
+      }}>
+        {/* Background text */}
+        <div className="font-display" style={{
+          position: "absolute", right: -10, top: "50%",
+          transform: "translateY(-50%)",
+          fontSize: 120, color: "rgba(255,85,0,0.04)",
+          lineHeight: 1, userSelect: "none", pointerEvents: "none",
+        }}>CV</div>
+
+        {/* Top line */}
+        <div style={{
+          position: "absolute", top: 0, left: 0, right: 0, height: 2,
+          background: "linear-gradient(90deg, var(--orange), var(--blue), transparent)",
+        }} />
+
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
+          <div>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", color: "var(--text-muted)", marginBottom: 6 }}>
+              GOOD {getGreeting()}, {user?.name?.split(" ")[0]?.toUpperCase()}
+            </p>
+            <h1 className="font-display-italic" style={{ fontSize: 48, lineHeight: 1, marginBottom: 8 }}>
+              <span className="gradient-text-orange">YOUR</span>{" "}
+              <span style={{ color: "var(--text-primary)" }}>DASHBOARD</span>
+            </h1>
+            <p style={{ color: "var(--text-secondary)", fontSize: 13 }}>
+              {stats.totalSessions === 0
+                ? "Every legend starts somewhere. Log your first session."
+                : stats.currentStreak >= 3
+                  ? `🔥 ${stats.currentStreak} day streak — you're on fire. Keep it going.`
+                  : "Track every rep. Every shot. Every session."}
+            </p>
+          </div>
+
+          <button
+            onClick={() => setShowModal(true)}
+            style={{
+              padding: "13px 24px",
+              background: "linear-gradient(135deg, var(--orange), var(--orange-bright))",
+              color: "#fff", border: "none",
+              borderRadius: "var(--radius-sm)",
+              fontWeight: 800, fontSize: 13,
+              letterSpacing: "0.08em", textTransform: "uppercase",
+              boxShadow: "0 4px 24px rgba(255,85,0,0.4)",
+              display: "flex", alignItems: "center", gap: 8,
+              cursor: "pointer",
+              transition: "all 0.2s",
+            }}
+            onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 8px 32px rgba(255,85,0,0.5)"; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 24px rgba(255,85,0,0.4)"; }}
+          >
+            <span style={{ fontSize: 16 }}>+</span> LOG SESSION
+          </button>
+        </div>
       </div>
 
-      {/* Streak Banner */}
+      {/* ── Streak Banner ─────────────────────────────── */}
       {stats.currentStreak >= 2 && (
-        <div className="fade-in" style={{
-          background: "linear-gradient(135deg, rgba(255,107,26,0.12), rgba(255,107,26,0.04))",
-          border: "1px solid rgba(255,107,26,0.3)",
+        <div className="fade-up" style={{
+          background: "linear-gradient(135deg, rgba(255,85,0,0.1), rgba(255,85,0,0.04))",
+          border: "1px solid rgba(255,85,0,0.25)",
           borderRadius: "var(--radius-lg)",
           padding: "14px 20px",
-          marginBottom: 24,
-          display: "flex",
-          alignItems: "center",
-          gap: 12,
+          marginBottom: 20,
+          display: "flex", alignItems: "center", gap: 14,
+          animationDelay: "0.05s",
         }}>
-          <span style={{ fontSize: 24 }}>🔥</span>
-          <div>
-            <p className="font-display" style={{ fontSize: 18, color: "var(--orange)" }}>
+          <div style={{
+            width: 44, height: 44, borderRadius: 10,
+            background: "rgba(255,85,0,0.15)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 22, flexShrink: 0,
+          }}>🔥</div>
+          <div style={{ flex: 1 }}>
+            <div className="font-display" style={{ fontSize: 20, color: "var(--orange)" }}>
               {stats.currentStreak} DAY STREAK
-            </p>
-            <p style={{ color: "var(--text-muted)", fontSize: 12 }}>
-              Keep showing up. Don't break the chain.
-            </p>
+            </div>
+            <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 1 }}>
+              Don't break the chain. Show up tomorrow.
+            </div>
+          </div>
+          <div className="font-display" style={{ fontSize: 36, color: "rgba(255,85,0,0.2)" }}>
+            {stats.currentStreak}
           </div>
         </div>
       )}
 
-      {/* Stat Cards Grid */}
+      {/* ── Stat Cards ────────────────────────────────── */}
       <div style={{
         display: "grid",
-        gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
-        gap: 14,
-        marginBottom: 28,
+        gridTemplateColumns: "repeat(auto-fill, minmax(210px, 1fr))",
+        gap: 12, marginBottom: 20,
       }}>
-        <StatCard
-          icon="🏀"
-          label="Total Sessions"
-          value={stats.totalSessions}
-          sub={stats.totalSessions === 0 ? "Log your first session" : "All time"}
-          color="orange"
-          delay={0}
-        />
-        <StatCard
-          icon="🎯"
-          label="Avg Shooting %"
-          value={`${stats.avgShootingPct}%`}
-          sub={`${stats.totalMade} made / ${stats.totalShots} attempted`}
-          color={stats.avgShootingPct >= 50 ? "green" : "orange"}
-          delay={80}
-        />
-        <StatCard
-          icon="⏱️"
-          label="Total Practice Time"
-          value={timeDisplay || "0m"}
-          sub="Combined court time"
-          color="blue"
-          delay={160}
-        />
-        <StatCard
-          icon="🔥"
-          label="Current Streak"
-          value={`${stats.currentStreak}d`}
-          sub={stats.currentStreak > 0 ? "Days in a row" : "Log today to start"}
-          color="yellow"
-          delay={240}
-        />
+        <StatCard icon="🏀" label="Total Sessions" value={stats.totalSessions}
+          sub="All time" color="orange" delay={0} />
+        <StatCard icon="🎯" label="Shooting Avg" value={`${stats.avgShootingPct}%`}
+          sub={`${stats.totalMade}/${stats.totalShots} shots`}
+          color={stats.avgShootingPct >= 50 ? "green" : "orange"} delay={80} />
+        <StatCard icon="⏱️" label="Court Time" value={timeDisplay || "0m"}
+          sub="Total practice" color="blue" delay={160} />
+        <StatCard icon="🔥" label="Streak" value={`${stats.currentStreak}d`}
+          sub={stats.currentStreak > 0 ? "Days in a row" : "Start today"} color="yellow" delay={240} />
       </div>
 
-      {/* Charts Row */}
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "1fr 1fr",
-        gap: 14,
-        marginBottom: 28,
-      }}>
-        {/* Weekly Chart */}
+      {/* ── Charts ────────────────────────────────────── */}
+      <div style={{ display: "grid", gridTemplateColumns: "1.6fr 1fr", gap: 12, marginBottom: 12 }}>
         <div style={{
-          background: "var(--bg-card)",
-          border: "1px solid var(--border)",
-          borderRadius: "var(--radius-lg)",
-          padding: "20px",
-          gridColumn: "1 / -1", // full width by default
+          background: "var(--bg-card)", border: "1px solid var(--border)",
+          borderRadius: "var(--radius-lg)", padding: "22px",
         }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 18 }}>
             <div>
-              <p className="font-display" style={{ fontSize: 14, letterSpacing: "0.06em" }}>
-                WEEKLY SHOTS
-              </p>
-              <p style={{ color: "var(--text-muted)", fontSize: 11, marginTop: 2 }}>
-                Last 7 days — made vs attempted
-              </p>
+              <p className="font-display" style={{ fontSize: 16, letterSpacing: "0.06em" }}>WEEKLY SHOTS</p>
+              <p style={{ color: "var(--text-muted)", fontSize: 11, marginTop: 2 }}>Made vs attempted — last 7 days</p>
             </div>
+            <div style={{
+              padding: "3px 10px", borderRadius: 4,
+              background: "rgba(14,165,233,0.1)", border: "1px solid rgba(14,165,233,0.2)",
+              fontSize: 10, fontWeight: 700, color: "var(--blue)", letterSpacing: "0.08em",
+            }}>THIS WEEK</div>
           </div>
           <WeeklyChart data={stats.weeklyData} />
         </div>
-      </div>
 
-      {/* Trend chart + Recent sessions */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-        {/* Trend Chart */}
         <div style={{
-          background: "var(--bg-card)",
-          border: "1px solid var(--border)",
-          borderRadius: "var(--radius-lg)",
-          padding: "20px",
+          background: "var(--bg-card)", border: "1px solid var(--border)",
+          borderRadius: "var(--radius-lg)", padding: "22px",
         }}>
-          <p className="font-display" style={{ fontSize: 14, letterSpacing: "0.06em", marginBottom: 4 }}>
-            SHOOTING TREND
-          </p>
-          <p style={{ color: "var(--text-muted)", fontSize: 11, marginBottom: 16 }}>
-            Last 10 sessions
-          </p>
+          <p className="font-display" style={{ fontSize: 16, letterSpacing: "0.06em", marginBottom: 4 }}>TREND</p>
+          <p style={{ color: "var(--text-muted)", fontSize: 11, marginBottom: 16 }}>Shooting % over time</p>
           <TrendChart data={stats.recentTrend} />
         </div>
-
-        {/* Recent Sessions */}
-        <div style={{
-          background: "var(--bg-card)",
-          border: "1px solid var(--border)",
-          borderRadius: "var(--radius-lg)",
-          padding: "20px",
-        }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-            <div>
-              <p className="font-display" style={{ fontSize: 14, letterSpacing: "0.06em" }}>
-                RECENT SESSIONS
-              </p>
-              <p style={{ color: "var(--text-muted)", fontSize: 11, marginTop: 2 }}>Latest 3</p>
-            </div>
-          </div>
-
-          {recentSessions.length === 0 ? (
-            <div style={{
-              textAlign: "center", padding: "32px 16px",
-              color: "var(--text-muted)", fontSize: 13,
-            }}>
-              <div style={{ fontSize: 32, marginBottom: 10 }}>🏀</div>
-              <p>No sessions yet.</p>
-              <p style={{ fontSize: 11, marginTop: 4 }}>Hit "Log Session" to start tracking.</p>
-            </div>
-          ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {recentSessions.map((s, i) => (
-                <SessionCard key={s.id} session={s} delay={i * 60} />
-              ))}
-            </div>
-          )}
-        </div>
       </div>
 
-      {showModal && (
-        <AddSessionModal
-          onClose={() => setShowModal(false)}
-          onSuccess={() => {}}
-        />
-      )}
+      {/* ── Recent Sessions ───────────────────────────── */}
+      <div style={{
+        background: "var(--bg-card)", border: "1px solid var(--border)",
+        borderRadius: "var(--radius-lg)", padding: "22px",
+      }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+          <div>
+            <p className="font-display" style={{ fontSize: 16, letterSpacing: "0.06em" }}>RECENT SESSIONS</p>
+            <p style={{ color: "var(--text-muted)", fontSize: 11, marginTop: 2 }}>Your last 3 practices</p>
+          </div>
+        </div>
+        {recentSessions.length === 0 ? (
+          <div style={{ textAlign: "center", padding: "36px 20px", color: "var(--text-muted)" }}>
+            <div style={{ fontSize: 36, marginBottom: 10 }}>🏀</div>
+            <p style={{ fontSize: 14, color: "var(--text-secondary)", fontWeight: 600 }}>No sessions yet</p>
+            <p style={{ fontSize: 12, marginTop: 4 }}>Hit LOG SESSION to start tracking</p>
+          </div>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {recentSessions.map((s, i) => <SessionCard key={s.id} session={s} delay={i * 60} />)}
+          </div>
+        )}
+      </div>
+
+      {showModal && <AddSessionModal onClose={() => setShowModal(false)} />}
     </div>
   );
 }

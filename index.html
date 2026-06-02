@@ -1,1 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CourtVision — Basketball Analytics App</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,800;0,900;1,800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --orange: #ff5500;
+      --orange-bright: #ff7733;
+      --blue: #0ea5e9;
+      --bg: #080808;
+      --bg2: #0e0e0e;
+      --card: #121212;
+      --border: #222;
+      --text: #f0f0f0;
+      --muted: #666;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .font-display {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    .italic { font-style: italic; }
+
+    /* ── Navbar ── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 40px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: rgba(8,8,8,0.95);
+      backdrop-filter: blur(10px);
+      z-index: 100;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 22px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .logo-icon {
+      width: 36px; height: 36px;
+      background: var(--orange);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      box-shadow: 0 0 20px rgba(255,85,0,0.5);
+    }
+
+    .nav-btn {
+      padding: 9px 20px;
+      background: linear-gradient(135deg, var(--orange), var(--orange-bright));
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 4px 20px rgba(255,85,0,0.3);
+      transition: all 0.2s;
+    }
+
+    .nav-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 28px rgba(255,85,0,0.5);
+    }
+
+    /* ── Hero ── */
+    .hero {
+      min-height: 92vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 60px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(255,85,0,0.08) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .hero::after {
+      content: '23';
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 40vw;
+      color: rgba(255,85,0,0.025);
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      line-height: 1;
+      user-select: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,85,0,0.1);
+      border: 1px solid rgba(255,85,0,0.3);
+      color: var(--orange);
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+
+    .hero-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-style: italic;
+      font-size: clamp(60px, 12vw, 120px);
+      line-height: 0.9;
+      margin-bottom: 24px;
+    }
+
+    .gradient-orange {
+      background: linear-gradient(135deg, #ff5500, #ff9900);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gradient-blue {
+      background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      color: #888;
+      font-size: 17px;
+      line-height: 1.7;
+      max-width: 500px;
+      margin: 0 auto 40px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 15px 32px;
+      background: linear-gradient(135deg, var(--orange), var(--orange-bright));
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 15px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 6px 30px rgba(255,85,0,0.4);
+      transition: all 0.2s;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 40px rgba(255,85,0,0.5);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 15px 32px;
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover {
+      background: var(--card);
+      border-color: #444;
+    }
+
+    /* ── Stats bar ── */
+    .stats-bar {
+      display: flex;
+      justify-content: center;
+      gap: 60px;
+      padding: 32px 20px;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg2);
+      flex-wrap: wrap;
+    }
+
+    .stat-item { text-align: center; }
+
+    .stat-val {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 36px;
+      color: var(--orange);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    /* ── Features ── */
+    .section {
+      padding: 80px 40px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: clamp(36px, 6vw, 56px);
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+
+    .section-sub {
+      color: #888;
+      font-size: 15px;
+      max-width: 500px;
+      line-height: 1.7;
+      margin-bottom: 48px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .feature-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      transition: all 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--orange), transparent);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .feature-card:hover {
+      border-color: rgba(255,85,0,0.3);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+    }
+
+    .feature-card:hover::before { opacity: 1; }
+
+    .feature-icon {
+      width: 44px; height: 44px;
+      background: rgba(255,85,0,0.1);
+      border: 1px solid rgba(255,85,0,0.2);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      margin-bottom: 16px;
+    }
+
+    .feature-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: 0.04em;
+      margin-bottom: 8px;
+    }
+
+    .feature-desc {
+      color: #777;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    /* ── Screenshots ── */
+    .screenshots {
+      padding: 80px 40px;
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .phone-mockup {
+      display: inline-block;
+      width: 220px;
+      background: #111;
+      border: 2px solid #333;
+      border-radius: 36px;
+      padding: 12px;
+      margin: 0 10px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+      vertical-align: top;
+    }
+
+    .phone-screen {
+      background: #080808;
+      border-radius: 26px;
+      height: 400px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      border: 1px solid #1a1a1a;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .phone-screen-inner {
+      width: 100%;
+      height: 100%;
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .mock-header {
+      background: linear-gradient(135deg, rgba(255,85,0,0.15), rgba(14,165,233,0.05));
+      border: 1px solid rgba(255,85,0,0.2);
+      border-radius: 10px;
+      padding: 12px;
+      text-align: left;
+    }
+
+    .mock-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 16px;
+      color: #ff5500;
+    }
+
+    .mock-sub { font-size: 9px; color: #555; margin-top: 2px; }
+
+    .mock-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .mock-card {
+      background: #161616;
+      border: 1px solid #222;
+      border-radius: 8px;
+      padding: 10px 8px;
+    }
+
+    .mock-card-val {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 20px;
+      color: #ff5500;
+    }
+
+    .mock-card-label { font-size: 8px; color: #555; text-transform: uppercase; }
+
+    .mock-bar-container {
+      background: #161616;
+      border: 1px solid #222;
+      border-radius: 8px;
+      padding: 10px;
+      flex: 1;
+    }
+
+    .mock-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 4px;
+      height: 60px;
+      margin-top: 6px;
+    }
+
+    .mock-bar {
+      flex: 1;
+      background: rgba(255,85,0,0.3);
+      border-radius: 2px 2px 0 0;
+    }
+
+    .mock-bar.active { background: #ff5500; }
+
+    .mock-nav {
+      background: #0e0e0e;
+      border: 1px solid #1a1a1a;
+      border-radius: 10px;
+      padding: 8px;
+      display: flex;
+      justify-content: space-around;
+    }
+
+    .mock-nav-item {
+      font-size: 14px;
+      opacity: 0.4;
+    }
+
+    .mock-nav-item.active { opacity: 1; }
+
+    /* ── Download section ── */
+    .download-section {
+      padding: 80px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .download-section::before {
+      content: '';
+      position: absolute;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(255,85,0,0.06) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .download-card {
+      background: var(--card);
+      border: 1px solid rgba(255,85,0,0.2);
+      border-radius: 20px;
+      padding: 48px 40px;
+      max-width: 600px;
+      margin: 0 auto;
+      position: relative;
+      box-shadow: 0 0 60px rgba(255,85,0,0.1);
+    }
+
+    .download-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--orange), var(--blue));
+      border-radius: 20px 20px 0 0;
+    }
+
+    .download-icon {
+      width: 72px; height: 72px;
+      background: linear-gradient(135deg, var(--orange), var(--orange-bright));
+      border-radius: 18px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 34px;
+      margin: 0 auto 24px;
+      box-shadow: 0 0 40px rgba(255,85,0,0.4);
+    }
+
+    .download-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 42px;
+      margin-bottom: 12px;
+    }
+
+    .download-sub {
+      color: #777;
+      font-size: 15px;
+      line-height: 1.7;
+      margin-bottom: 32px;
+    }
+
+    .version-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(14,165,233,0.1);
+      border: 1px solid rgba(14,165,233,0.2);
+      color: var(--blue);
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      margin-bottom: 28px;
+    }
+
+    .install-steps {
+      background: #0a0a0a;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      text-align: left;
+      margin-top: 24px;
+    }
+
+    .install-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid #1a1a1a;
+      font-size: 13px;
+      color: #888;
+    }
+
+    .install-step:last-child { border-bottom: none; }
+
+    .step-num {
+      width: 22px; height: 22px;
+      background: rgba(255,85,0,0.15);
+      border: 1px solid rgba(255,85,0,0.3);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--orange);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* ── Footer ── */
+    footer {
+      padding: 32px 40px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-logo {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 18px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .footer-text {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    /* ── Animations ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-up { animation: fadeUp 0.6s cubic-bezier(.22,1,.36,1) forwards; }
+    .delay-1 { animation-delay: 0.1s; opacity: 0; }
+    .delay-2 { animation-delay: 0.2s; opacity: 0; }
+    .delay-3 { animation-delay: 0.3s; opacity: 0; }
+
+    /* ── Mobile ── */
+    @media (max-width: 600px) {
+      nav { padding: 14px 16px; }
+      .section { padding: 60px 16px; }
+      .screenshots { padding: 60px 16px; }
+      .download-section { padding: 60px 16px; }
+      .download-card { padding: 32px 20px; }
+      footer { padding: 24px 16px; flex-direction: column; text-align: center; }
+      .stats-bar { gap: 32px; }
+      .phone-mockup { width: 160px; }
+      .phone-screen { height: 300px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav>
+    <div class="logo">
+      <div class="logo-icon">🏀</div>
+      COURT<span style="color:var(--orange)">VISION</span>
+    </div>
+    <a href="#download" class="nav-btn">⬇ Download APK</a>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-badge fade-up">
+        🏀 Basketball Analytics Platform
+      </div>
+      <h1 class="hero-title fade-up delay-1">
+        <span class="gradient-orange">TRAIN</span><br>
+        HARDER.<br>
+        <span class="gradient-blue">TRACK</span><br>
+        SMARTER.
+      </h1>
+      <p class="hero-sub fade-up delay-2">
+        Every elite player tracks their progress. CourtVision gives you the tools to log sessions, analyze your shooting, and level up your game.
+      </p>
+      <div class="btn-group fade-up delay-3">
+        <a href="#download" class="btn-primary">
+          ⬇ Download for Android
+        </a>
+        <a href="#features" class="btn-secondary">
+          See Features →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats bar -->
+  <div class="stats-bar">
+    <div class="stat-item">
+      <div class="stat-val">100%</div>
+      <div class="stat-label">Free Forever</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-val">6+</div>
+      <div class="stat-label">Stats Tracked</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-val">∞</div>
+      <div class="stat-label">Sessions</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-val">0</div>
+      <div class="stat-label">Ads. Ever.</div>
+    </div>
+  </div>
+
+  <!-- Features -->
+  <section class="section" id="features">
+    <div class="section-label">What you get</div>
+    <h2 class="section-title">EVERYTHING YOU<br><span class="gradient-orange">NEED TO LEVEL UP</span></h2>
+    <p class="section-sub">Built for serious players who want to track every rep, every shot, every session.</p>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <div class="feature-title">SHOT TRACKING</div>
+        <div class="feature-desc">Log shots made and attempted. See your shooting percentage update in real time as you type.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <div class="feature-title">ANALYTICS DASHBOARD</div>
+        <div class="feature-desc">Weekly charts, shooting trends, and a full analytics breakdown of your performance over time.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔥</div>
+        <div class="feature-title">STREAK COUNTER</div>
+        <div class="feature-desc">Track your daily practice streak. Don't break the chain — consistency is everything.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⏱️</div>
+        <div class="feature-title">PRACTICE TIMER</div>
+        <div class="feature-desc">Log total practice duration and dribbling drill time. Know exactly how much time you're putting in.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📝</div>
+        <div class="feature-title">SESSION NOTES</div>
+        <div class="feature-desc">Add notes to every session — what worked, what didn't, what to improve next time.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📈</div>
+        <div class="feature-title">PROGRESS BENCHMARKS</div>
+        <div class="feature-desc">Track progress toward goals like 60% shooting, 50 hours of practice, and more.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Phone mockups -->
+  <div class="screenshots">
+    <div class="section-label" style="margin-bottom:12px">App Preview</div>
+    <h2 class="section-title" style="margin-bottom:40px">LOOKS AS GOOD<br><span class="gradient-orange">AS IT PERFORMS</span></h2>
+
+    <div style="display:flex; justify-content:center; gap:20px; flex-wrap:wrap; align-items:flex-start">
+
+      <!-- Phone 1 — Dashboard -->
+      <div class="phone-mockup">
+        <div class="phone-screen">
+          <div class="phone-screen-inner">
+            <div style="font-size:9px;color:#555;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px">GOOD MORNING</div>
+            <div class="mock-header">
+              <div class="mock-title">YOUR DASHBOARD</div>
+              <div class="mock-sub">Track every rep. Every shot.</div>
+            </div>
+            <div class="mock-cards">
+              <div class="mock-card">
+                <div class="mock-card-val">24</div>
+                <div class="mock-card-label">Sessions</div>
+              </div>
+              <div class="mock-card">
+                <div class="mock-card-val" style="color:#0ea5e9">58%</div>
+                <div class="mock-card-label">Avg Shooting</div>
+              </div>
+              <div class="mock-card">
+                <div class="mock-card-val" style="color:#0ea5e9">18h</div>
+                <div class="mock-card-label">Court Time</div>
+              </div>
+              <div class="mock-card">
+                <div class="mock-card-val" style="color:#f59e0b">7d</div>
+                <div class="mock-card-label">Streak</div>
+              </div>
+            </div>
+            <div class="mock-bar-container">
+              <div style="font-size:8px;color:#555;font-weight:700;text-transform:uppercase">Weekly Shots</div>
+              <div class="mock-bars">
+                <div class="mock-bar" style="height:30%"></div>
+                <div class="mock-bar" style="height:60%"></div>
+                <div class="mock-bar active" style="height:85%"></div>
+                <div class="mock-bar" style="height:45%"></div>
+                <div class="mock-bar active" style="height:70%"></div>
+                <div class="mock-bar" style="height:20%"></div>
+                <div class="mock-bar active" style="height:90%"></div>
+              </div>
+            </div>
+            <div class="mock-nav">
+              <div class="mock-nav-item active">⚡</div>
+              <div class="mock-nav-item">🏀</div>
+              <div class="mock-nav-item">📊</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phone 2 — Log Session -->
+      <div class="phone-mockup" style="margin-top:40px">
+        <div class="phone-screen">
+          <div class="phone-screen-inner">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+              <div>
+                <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;text-transform:uppercase;letter-spacing:0.05em">LOG SESSION</div>
+                <div style="font-size:9px;color:#555">Track your practice</div>
+              </div>
+              <div style="width:22px;height:22px;background:#1a1a1a;border:1px solid #333;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#666">×</div>
+            </div>
+            <div style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);border-radius:8px;padding:10px;display:flex;align-items:center;gap:8px">
+              <span style="font-size:18px">🔥</span>
+              <div>
+                <div style="font-size:9px;color:#555">Shooting %</div>
+                <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:22px;color:#22c55e">63%</div>
+              </div>
+            </div>
+            <div style="background:#161616;border:1px solid #222;border-radius:8px;padding:10px">
+              <div style="font-size:8px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:6px">Workout Type</div>
+              <div style="background:#1e1e1e;border-radius:4px;padding:7px 10px;font-size:11px;color:#888">Shooting Practice ▾</div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+              <div style="background:#161616;border:1px solid #222;border-radius:8px;padding:10px">
+                <div style="font-size:8px;color:#555;text-transform:uppercase;margin-bottom:4px">Made</div>
+                <div style="background:#1e1e1e;border-radius:4px;padding:6px 8px;font-size:14px;color:#ff5500;font-weight:700">19</div>
+              </div>
+              <div style="background:#161616;border:1px solid #222;border-radius:8px;padding:10px">
+                <div style="font-size:8px;color:#555;text-transform:uppercase;margin-bottom:4px">Attempted</div>
+                <div style="background:#1e1e1e;border-radius:4px;padding:6px 8px;font-size:14px;color:#888">30</div>
+              </div>
+            </div>
+            <div style="background:linear-gradient(135deg,#ff5500,#ff7733);border-radius:8px;padding:11px;text-align:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;letter-spacing:0.08em;color:#fff;box-shadow:0 4px 16px rgba(255,85,0,0.3)">
+              🏀 SAVE SESSION
+            </div>
+            <div class="mock-nav">
+              <div class="mock-nav-item">⚡</div>
+              <div class="mock-nav-item active">🏀</div>
+              <div class="mock-nav-item">📊</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phone 3 — Analytics -->
+      <div class="phone-mockup">
+        <div class="phone-screen">
+          <div class="phone-screen-inner">
+            <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:2px">ANALYTICS <span style="color:#ff5500">DEEP DIVE</span></div>
+            <div style="font-size:9px;color:#555;margin-bottom:8px">24 sessions analyzed</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px">
+              <div style="background:#161616;border:1px solid #222;border-radius:8px;padding:10px">
+                <div style="font-size:9px">🎯</div>
+                <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;color:#ff5500">58%</div>
+                <div style="font-size:8px;color:#555">Shooting Avg</div>
+              </div>
+              <div style="background:#161616;border:1px solid #222;border-radius:8px;padding:10px">
+                <div style="font-size:9px">⏱️</div>
+                <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;color:#0ea5e9">18h</div>
+                <div style="font-size:8px;color:#555">Court Hours</div>
+              </div>
+            </div>
+            <div style="background:#161616;border:1px solid #222;border-radius:8px;padding:10px;flex:1">
+              <div style="font-size:8px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Progress Benchmarks</div>
+              <div style="margin-bottom:8px">
+                <div style="display:flex;justify-content:space-between;font-size:9px;color:#666;margin-bottom:3px"><span>Shooting (goal 60%)</span><span style="color:#ff5500">58%</span></div>
+                <div style="height:4px;background:#1e1e1e;border-radius:2px"><div style="height:100%;width:58%;background:linear-gradient(90deg,#ff5500,#ff7733);border-radius:2px"></div></div>
+              </div>
+              <div style="margin-bottom:8px">
+                <div style="display:flex;justify-content:space-between;font-size:9px;color:#666;margin-bottom:3px"><span>Sessions (goal 20)</span><span style="color:#0ea5e9">24</span></div>
+                <div style="height:4px;background:#1e1e1e;border-radius:2px"><div style="height:100%;width:100%;background:linear-gradient(90deg,#0ea5e9,#38bdf8);border-radius:2px"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:9px;color:#666;margin-bottom:3px"><span>Hours (goal 50h)</span><span style="color:#22c55e">18h</span></div>
+                <div style="height:4px;background:#1e1e1e;border-radius:2px"><div style="height:100%;width:36%;background:linear-gradient(90deg,#22c55e,#4ade80);border-radius:2px"></div></div>
+              </div>
+            </div>
+            <div class="mock-nav">
+              <div class="mock-nav-item">⚡</div>
+              <div class="mock-nav-item">🏀</div>
+              <div class="mock-nav-item active">📊</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Download -->
+  <section class="download-section" id="download">
+    <div class="download-card">
+      <div class="download-icon">🏀</div>
+      <div class="version-badge">v1.0.0 · Android · Free</div>
+      <h2 class="download-title">DOWNLOAD<br><span class="gradient-orange">COURTVISION</span></h2>
+      <p class="download-sub">
+        Free forever. No ads. No subscription. Just you and your stats.
+        Upload your APK to Google Drive and paste the link below.
+      </p>
+
+      <!-- REPLACE THIS HREF WITH YOUR GOOGLE DRIVE LINK -->
+      <a href="https://drive.google.com/file/d/1pGzPVdN0PoMr-h-r1sfDrcD7chqlXyqe/view?usp=drive_link" class="btn-primary" style="font-size:16px; padding:16px 40px">
+        ⬇ Download APK (Android)
+      </a>
+
+      <div class="install-steps">
+        <div style="font-size:10px;font-weight:700;color:#555;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px">How to install</div>
+        <div class="install-step">
+          <div class="step-num">1</div>
+          <span>Download the APK file to your Android phone</span>
+        </div>
+        <div class="install-step">
+          <div class="step-num">2</div>
+          <span>Open your Downloads folder and tap the APK file</span>
+        </div>
+        <div class="install-step">
+          <div class="step-num">3</div>
+          <span>If prompted, tap "Install from unknown sources" and allow it</span>
+        </div>
+        <div class="install-step">
+          <div class="step-num">4</div>
+          <span>Tap Install — CourtVision is ready to use!</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer style="flex-direction:column; text-align:center; gap:24px; padding: 48px 40px;">
+
+    <!-- Logo -->
+    <div class="footer-logo">
+      COURT<span style="color:var(--orange)">VISION</span>
+    </div>
+
+    <!-- Divider -->
+    <div style="width:60px; height:1px; background:linear-gradient(90deg, var(--orange), var(--blue)); margin:0 auto;"></div>
+
+    <!-- Creator -->
+    <div>
+      <div style="font-size:11px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); margin-bottom:10px;">
+        Created by
+      </div>
+      <div style="font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:28px; letter-spacing:0.06em; margin-bottom:16px;">
+        VAAGEESH DATTA
+      </div>
+
+      <!-- Social links -->
+      <div style="display:flex; justify-content:center; gap:14px; flex-wrap:wrap;">
+
+        <!-- Instagram -->
+        <a href="https://www.instagram.com/vaageeshdattag/" target="_blank" rel="noopener"
+          style="display:inline-flex; align-items:center; gap:8px; padding:10px 20px;
+          background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);
+          color:#fff; border-radius:8px; text-decoration:none;
+          font-weight:700; font-size:13px; letter-spacing:0.04em;
+          box-shadow: 0 4px 20px rgba(253,29,29,0.3);
+          transition: all 0.2s;"
+          onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 28px rgba(253,29,29,0.4)'"
+          onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 20px rgba(253,29,29,0.3)'"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+          </svg>
+          @vaageeshdattag
+        </a>
+
+        <!-- GitHub -->
+        <a href="https://github.com/Vdgthegamer" target="_blank" rel="noopener"
+          style="display:inline-flex; align-items:center; gap:8px; padding:10px 20px;
+          background: #161616; color:#fff; border:1px solid #333;
+          border-radius:8px; text-decoration:none;
+          font-weight:700; font-size:13px; letter-spacing:0.04em;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+          transition: all 0.2s;"
+          onmouseover="this.style.transform='translateY(-2px)'; this.style.borderColor='#666'; this.style.boxShadow='0 8px 28px rgba(0,0,0,0.5)'"
+          onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='#333'; this.style.boxShadow='0 4px 20px rgba(0,0,0,0.3)'"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+          </svg>
+          Vdgthegamer
+        </a>
+
+      </div>
+    </div>
+
+    <!-- Bottom text -->
+    <div style="font-size:11px; color:var(--muted); margin-top:8px;">
+      Built with 🏀 · CourtVision Basketball Analytics · Free & Open Source
+    </div>
+
+  </footer>
+
+</body>
+</html>
 

@@ -2,16 +2,7 @@
 
 A sleek, dark-mode sports analytics web app for tracking basketball practice sessions.
 
-## Quick Start (Frontend Only — works immediately)
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-Then open http://localhost:5173 in your browser.
-
+Visit @ https://frontend-zeta-blond-24.vercel.app
 ## Features
 - Sign up / log in (data stored locally in your browser)
 - Log practice sessions (shots, duration, drills)
@@ -42,17 +33,6 @@ courtvision/
     ├── models/        ← schemas.py (Pydantic data validation)
     └── requirements.txt
 ```
-
-## Backend Setup (Optional)
-
-```bash
-cd backend
-pip install -r requirements.txt
-cp .env.example .env   # fill in your Supabase credentials
-uvicorn main:app --reload
-```
-
-API docs at http://localhost:8000/docs
 
 ## Tech Stack
 - **Frontend:** React 18, Vite, Recharts, CSS Variables
